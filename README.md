@@ -23,7 +23,7 @@ A Cloudflare Worker that parses incoming emails **Transaction Notification from 
 }
 ```
 
-<img src="./img/photo_2026-02-10-Medium.jpeg" alt="image" />
+<img src="./photo_2026-02-16.jpeg" alt="image" />
 
 ## Setup
 
@@ -37,7 +37,7 @@ A Cloudflare Worker that parses incoming emails **Transaction Notification from 
     ```bash
     npm run test:local
     ```
-    Ensure you have Pembayaran QRIS Berhasil (Tidak Perlu Dibalas).eml` or `Fwd_Pembayaran QRIS Berhasil (Tidak Perlu Dibalas).eml` in the root.
+    Ensure you have `Transaksi Kartu Kredit digibank Anda Berhasil.eml` or `Fwd_Transaksi Kartu Kredit digibank Anda Berhasil.eml` in the root.
 
 3.  **Secrets Configuration**:
     For local development, create a `.dev.vars` file:
