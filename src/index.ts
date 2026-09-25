@@ -3,12 +3,14 @@ import PostalMime from 'postal-mime';
 interface Env {
 	TELEGRAM_BOT_TOKEN: string;
 	TELEGRAM_CHAT_ID: string;
+	TELEGRAM_TOPIC_ID?: string;
 }
 
 export default {
 	async email(message: ForwardableEmailMessage, env: Env, ctx: ExecutionContext): Promise<void> {
 		const telegramBotToken = env.TELEGRAM_BOT_TOKEN;
 		const telegramChatId = env.TELEGRAM_CHAT_ID;
+		const telegramTopicId = env.TELEGRAM_TOPIC_ID;
 
 		if (!telegramBotToken || !telegramChatId) {
 			console.error('Missing Telegram configuration');
@@ -44,7 +46,7 @@ export default {
 				`*Tanggal Transaksi:* ${escapeMarkdown(transactionDetails.tanggalTransaksi)}\n` +
 				`*Nominal:* ${escapeMarkdown(transactionDetails.nominal)}`;
 
-			await sendToTelegram(telegramBotToken, telegramChatId, telegramMessage);
+			await sendToTelegram(telegramBotToken, telegramChatId, telegramMessage, telegramTopicId);
 
 		} catch (error) {
 			console.error('Error parsing email or sending to Telegram:', error);
@@ -128,13 +130,22 @@ export function parseForwardedMail(content: string): { from?: string, subject?: 
 	return { from, subject, date };
 }
 
-async function sendToTelegram(token: string, chatId: string, text: string) {
+async function sendToTelegram(token: string, chatId: string, text: string, topicId?: string) {
 	const url = `https://api.telegram.org/bot${token}/sendMessage`;
-	const body = {
+	const body: Record<string, unknown> = {
 		chat_id: chatId,
 		text: text,
 		parse_mode: 'Markdown'
 	};
+
+	if (topicId) {
+		const threadId = Number(topicId);
+		if (Number.isNaN(threadId)) {
+			console.error(`Invalid TELEGRAM_TOPIC_ID: ${topicId} (must be numeric)`);
+		} else {
+			body.message_thread_id = threadId;
+		}
+	}
 
 	const response = await fetch(url, {
 		method: 'POST',
